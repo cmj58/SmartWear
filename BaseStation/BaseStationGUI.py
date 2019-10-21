@@ -5,7 +5,21 @@ import time
 import sys
 import math
 import os
+import paho.mqtt.client as paho
 
+#MQTT
+mqtt_broker = "192.168.42.1"
+mqtt_port = 1883
+
+def on_publish(client,userdata,result):
+    print("data published \n")
+    pass
+
+broker_client = mqtt.Client()
+broker_client.on_publish = on_publish
+broker_client.connect(mqtt_broker,mqtt_port)
+
+#Current Directory
 Curr_Dir = "/home/root/GUI/lcddisplay "
 
 #MENU
@@ -55,7 +69,7 @@ os.system(display)
 while(1):
 
     #Braclet Menu
-    time.sleep(0.1)
+    time.sleep(0.5)
     #if in Select Menu
     if Men_Sel == 1:
         #Detect UP Press
@@ -183,7 +197,8 @@ while(1):
         #Detect ENTER Press    
         if Button_EN.read() == 0:
             #Change Bracelet Color via MQTT using Sel_Ind & Col_Ind **TODO**
-            
+            topic = Bracelet_Menu[Sel_Ind] + "/" + "Color"
+            broker_client.publish(topic,Color_Menu[Col_Ind])
             #Display the selection
             message = Bracelet_Menu[Sel_Ind] + '_' + Color_Menu[Col_Ind]
             display = Curr_Dir + message
@@ -246,6 +261,8 @@ while(1):
         #Detect ENTER Press    
         if Button_EN.read() == 0:
             #Change Bracelet Distance via MQTT using Sel_Ind & Dist_Ind **TODO**
+            topic = Bracelet_Menu[Sel_Ind] + "/" + "Distance"
+            broker_client.publish(topic,Distance_Menu[Dist_Ind])
             
             #Display the selection
             message = Bracelet_Menu[Sel_Ind] + '_' + Distance_Menu[Col_Ind]
