@@ -54,7 +54,6 @@ os.system(display)
 
 while(1):
 
-    
     #Braclet Menu
     time.sleep(0.1)
     #if in Select Menu
@@ -226,7 +225,7 @@ while(1):
         #Detect UP Press
         if Button_UP.read() == 0:
             if Dist_Ind == 10:
-                DIst_Ind = 0
+                Dist_Ind = 0
             else:
                 Dist_Ind = Dist_Ind + 1
                 
