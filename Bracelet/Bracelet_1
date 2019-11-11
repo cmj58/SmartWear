@@ -177,7 +177,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if(strcmp(topic,"Bracelet1/Color") == 0){
     if(strncmp((char*)payload, org, length) == 0){
          red = 255;
-         green = 165;
+         green = 140;
          blue = 0;
         
          strip.setPixelColor(LED, green, red, blue);
