@@ -5,19 +5,30 @@ import time
 import sys
 import math
 import os
-import paho.mqtt.client as paho
+import paho.mqtt.client as mqtt
 
 #MQTT
 mqtt_broker = "192.168.42.1"
 mqtt_port = 1883
 
+def on_connect(client,userdata,flags,rc):
+    print("Connected with result code "+str(rc))
+    client.subscribe("oor");
+
 def on_publish(client,userdata,result):
     print("data published \n")
-    pass
+
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
+    os.system(msg.payload)    
 
 broker_client = mqtt.Client()
-broker_client.on_publish = on_publish
 broker_client.connect(mqtt_broker,mqtt_port)
+broker_client.on_connect = on_connect
+broker_client.on_publish = on_publish
+broker_client.on_message = on_message
+
+#broker_client.subscribe("oor")
 
 #Current Directory
 Curr_Dir = "/home/root/GUI/lcddisplay "
@@ -26,7 +37,7 @@ Curr_Dir = "/home/root/GUI/lcddisplay "
 Bracelet_Menu = ['Bracelet1', 'Bracelet2', 'Bracelet3', 'Bracelet4', 'Bracelet5']
 Action_Menu = ['Color', 'Distance']
 Color_Menu = ['Blue', 'Green', 'Orange', 'Yellow', 'Pink', 'Purple']
-Distance_Menu = ['3', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
+Distance_Menu = ['2', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
 
 #U3800A Buttons
 #Button_UP: Button1 - GPIO 33
@@ -69,7 +80,7 @@ os.system(display)
 while(1):
 
     #Braclet Menu
-    time.sleep(0.5)
+    time.sleep(0.2)
     #if in Select Menu
     if Men_Sel == 1:
         #Detect UP Press
