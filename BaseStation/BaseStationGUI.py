@@ -7,29 +7,65 @@ import math
 import os
 import paho.mqtt.client as mqtt
 
+#Uncomment if you want to show when it connects to MQTT
+def on_connect(client, userdata, flags, rc):
+    broker_client.subscribe('oor', 0)
+    print("rc: " + str(rc))
+
+#When subscribed to a topic
+def on_subscribe(client, obj, mid, granted_qos):
+    print("Subscribed: " +str(mid_ + " " + str(granted_qos)))
+
+#When a message is received from the broker do something
+def on_message(client, obj, msg):
+    print("Message received from topic: " + msg.topic)
+    display = Curr_Dir + str(msg.payload)
+    os.system(display)
+    time.sleep(3)
+
+    #global declarations
+    global Men_Sel
+    global Men_Dist
+    global Men_Act
+    global Men_Col
+    global Sel_Ind
+    global Col_Ind
+    global Act_Ind
+    global Dist_ind
+    #Reset all index and go back to bracelet menu
+    Men_Sel   = 1
+    Men_Dist  = 0
+    Men_Act   = 0
+    Men_Col   = 0
+    Sel_Ind   = 0
+    Col_Ind   = 0
+    Act_Ind   = 0
+    Dist_Ind  = 0
+    display = Curr_Dir + Bracelet_Menu[Sel_Ind]
+    os.system(display)
+    
+#When a message is published do something
+def on_publish(client,userdata,result):
+    print("data published \n")
+    pass
+
+
 #MQTT
 mqtt_broker = "192.168.42.1"
 mqtt_port = 1883
-
-def on_connect(client,userdata,flags,rc):
-    print("Connected with result code "+str(rc))
-    client.subscribe("oor");
-
-def on_publish(client,userdata,result):
-    print("data published \n")
-
-def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
-    os.system(msg.payload)    
+mqtt_username = "bracelet1"
+mqtt_password = "12345"
 
 broker_client = mqtt.Client()
-broker_client.connect(mqtt_broker,mqtt_port)
-broker_client.on_connect = on_connect
-broker_client.on_publish = on_publish
 broker_client.on_message = on_message
+broker_client.on_publish = on_publish
+broker_client.on_connect = on_connect
+broker_client.on_subscribe = on_subscribe
 
-#broker_client.subscribe("oor")
-
+broker_client.username_pw_set(mqtt_username, mqtt_password)
+broker_client.connect(mqtt_broker,mqtt_port)
+broker_client.subscribe('oor', 0)
+broker_client.loop_start()
 #Current Directory
 Curr_Dir = "/home/root/GUI/lcddisplay "
 
@@ -37,7 +73,7 @@ Curr_Dir = "/home/root/GUI/lcddisplay "
 Bracelet_Menu = ['Bracelet1', 'Bracelet2', 'Bracelet3', 'Bracelet4', 'Bracelet5']
 Action_Menu = ['Color', 'Distance']
 Color_Menu = ['Blue', 'Green', 'Orange', 'Yellow', 'Pink', 'Purple']
-Distance_Menu = ['2', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
+Distance_Menu = ['3', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
 
 #U3800A Buttons
 #Button_UP: Button1 - GPIO 33
@@ -80,7 +116,7 @@ os.system(display)
 while(1):
 
     #Braclet Menu
-    time.sleep(0.2)
+    time.sleep(0.5)
     #if in Select Menu
     if Men_Sel == 1:
         #Detect UP Press
