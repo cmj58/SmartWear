@@ -146,6 +146,7 @@ void setup() {
  
     }
   }
+  //*************NEED TO CHANGE THESE FOR EVERY BRACLET******************
   client.subscribe("Bracelet1/Color");
   client.subscribe("Bracelet1/Distance");
 }
@@ -312,6 +313,27 @@ bool alert(double dist){
   }
   
 }
+
+/*=============================================================
+  Method: reconnect
+  Parameters:
+    none
+  Return: void
+  Description: reconnects to mqtt if disconnected
+  =============================================================
+*/ 
+ void reconnect(){
+  while(!client.connected()){
+    String clientID = "ESP8266-";
+    clientID += String(random(0xffff), HEX);
+    client.connect(clientID.c_str());
+    client.publish("oor", "B1_Connect");
+    client.subscribe("Bracelet1/Color");
+    client.subscribe("Bracelet1/Distance");
+    delay(3000);
+  }
+ }
+
 /*=============================================================
   Method: loop
   Parameters:
@@ -325,6 +347,9 @@ void loop() {
   drd.loop();
   
   // put your main code here, to run repeatedly:
+  if(!client.connected()){
+    reconnect();
+  }
   client.loop();
   
   //RSSI Loop
